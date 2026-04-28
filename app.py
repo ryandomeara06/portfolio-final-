@@ -9,14 +9,6 @@ st.set_page_config(page_title = "Final Project", layout="wide")
 
 st.title("Stock Analysis Application")
 
-tab1, tab2 = st.tabs(["Stock Indicator", "Portfolio Analysis"])
-
-with tab1:
-    display_stock_indicator()
-
-with tab2:
-    display_portfolio_analysis()
-
 def display_stock_indicator():
     st.write("Extract stock market prices from yahoo finance using ticker")
 
@@ -415,3 +407,12 @@ def display_portfolio_analysis():
                 st.error(f"Total weights must sum to 100%. Current total: {total_weight}%")
         else:
             st.error("Please enter all 5 stock tickers.")
+
+
+tab1, tab2 = st.tabs(["Stock Indicator", "Portfolio Analysis"])
+
+with tab1:
+    display_stock_indicator()
+
+with tab2:
+    display_portfolio_analysis()
