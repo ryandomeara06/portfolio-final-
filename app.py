@@ -242,7 +242,6 @@ def display_portfolio_analysis():
                 for i in range(5):
                     st.write(f"**{portfolio_stocks[i].upper()}**: {portfolio_weights[i]}%")
 
-                # Start of the new code for portfolio data fetching
                 st.subheader('Fetching Portfolio Data...')
 
                 stock_data = {}
@@ -253,7 +252,7 @@ def display_portfolio_analysis():
                 else:
                     for ticker in valid_tickers:
                         try:
-                            # MODIFICATION HERE: auto_adjust=False to get unadjusted prices and dividends
+
                             df_portfolio = yf.download(ticker, start=start_date_portfolio, end=end_date_portfolio, auto_adjust=False)
                             if df_portfolio.empty:
                                 st.error(f"No Data Found for {ticker}. Please check the ticker symbol or date range.")
@@ -263,12 +262,6 @@ def display_portfolio_analysis():
                         except Exception as e:
                             st.error(f"Error fetching data for {ticker}: {e}")
 
-                    if stock_data:
-                        first_ticker = list(stock_data.keys())[0]
-                        st.write(f"Preview of data for {first_ticker}:")
-                        st.dataframe(stock_data[first_ticker].head())
-
-                    # Fetch SPY data as a benchmark
                     st.subheader('Fetching Benchmark Data (SPY)...')
                     try:
                         spy_data = yf.download('SPY', start=start_date_portfolio, end=end_date_portfolio, auto_adjust=False)
@@ -281,19 +274,19 @@ def display_portfolio_analysis():
                     except Exception as e:
                         st.error(f"Error fetching SPY benchmark data: {e}")
 
-                    # --- NEW CODE FOR CALCULATIONS ---
+                    
                     st.subheader("Portfolio Performance Analysis")
 
-                    # Prepare prices DataFrame for portfolio stocks
+
                     prices_data = {ticker: stock_data[ticker]['Close'].squeeze() for ticker in stock_data}
                     if prices_data:
-                        # Check if all values in prices_data are scalars (should not happen with Series values from yfinance)
+
                         all_scalar_values = all(not isinstance(v, (pd.Series, list, np.ndarray)) for v in prices_data.values())
                         if all_scalar_values:
-                            # If all are scalars, provide a default index
+                            
                             prices = pd.DataFrame(prices_data, index=[0]).dropna()
                         else:
-                            # Otherwise, proceed as normal
+                           
                             prices = pd.DataFrame(prices_data).dropna()
                     else:
                         st.error("No valid stock data to perform portfolio analysis.")
@@ -309,7 +302,6 @@ def display_portfolio_analysis():
                         daily_returns = daily_returns.loc[common_index]
                         benchmark_returns = benchmark_returns.loc[common_index]
 
-                        # Create Portfolio dictionary for weights
                         Portfolio = {portfolio_stocks[i]: portfolio_weights[i] / 100.0 for i in range(len(portfolio_stocks)) if portfolio_stocks[i] in stock_data}
 
                         if not daily_returns.empty and Portfolio:
@@ -366,9 +358,9 @@ def display_portfolio_analysis():
 
 
                                 if portfolio_total > benchmark_total:
-                                    st.write(f"**1. Outperformance:** Your portfolio's total return of {portfolio_total * 100:.2f}% **outperformed** the benchmark (SPY) which had a total return of {benchmark_total * 100:.2f}%")
+                                    st.write(f"**1. Performance:** Your portfolio's total return of {portfolio_total * 100:.2f}% **outperformed** the benchmark (SPY) which had a total return of {benchmark_total * 100:.2f}%")
                                 elif portfolio_total < benchmark_total:
-                                    st.write(f"**1. Underperformance:** Your portfolio's total return of {portfolio_total * 100:.2f}% **underperformed** the benchmark (SPY) which had a total return of {benchmark_total * 100:.2f}%")
+                                    st.write(f"**1. Performance:** Your portfolio's total return of {portfolio_total * 100:.2f}% **underperformed** the benchmark (SPY) which had a total return of {benchmark_total * 100:.2f}%")
                                 else:
                                     st.write(f"**1. Equal Performance:** Your portfolio's total return of {portfolio_total * 100:.2f}% **performed equally** to the benchmark (SPY) which had a total return of {benchmark_total * 100:.2f}%. Both had total returns of {benchmark_total * 100:.2f}%. ")
 
