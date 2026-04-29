@@ -55,12 +55,11 @@ def display_stock_indicator():
 
             st.subheader("Moving Averages and Trend Analysis")
 
-            # Calculate moving averages
             df["MA20"] = df["Close"].rolling(20).mean()
             df["MA50"] = df["Close"].rolling(50).mean()
             df["MA200"] = df["Close"].rolling(200).mean()
 
-            # Plot moving averages
+
             fig_ma, ax_ma = plt.subplots(figsize=(12, 6))
             ax_ma.plot(df["Close"], label="Price")
             ax_ma.plot(df["MA20"], label="MA20")
@@ -72,7 +71,7 @@ def display_stock_indicator():
             ax_ma.legend()
             st.pyplot(fig_ma)
 
-            # Trend analysis
+
             close_prices = df["Close"]
             trend = "N/A"
             if len(close_prices) >= 200: # Ensure enough data for all MAs
@@ -106,17 +105,14 @@ def display_stock_indicator():
                 # Calculate delta
                 delta = df['Close'].diff(1)
 
-                # Calculate gains and losses
                 gains = delta.clip(lower=0)
                 losses = -delta.clip(upper=0)
 
-                # Calculate average gains and losses using rolling mean
                 avg_gain = gains.ewm(com=13, adjust=False).mean()
                 avg_loss = losses.ewm(com=13, adjust=False).mean()
 
-                # Calculate Relative Strength (RS) and RSI
                 if avg_loss.iloc[-1] == 0:
-                    rs = 100 # To avoid division by zero if there are no losses
+                    rs = 100 
                 else:
                     rs = avg_gain.iloc[-1] / avg_loss.iloc[-1]
 
@@ -188,10 +184,8 @@ def display_stock_indicator():
             else:
                 st.warning(f"Not enough data to calculate {VOLATILITY_PERIOD}-day Volatility. Need at least {VOLATILITY_PERIOD} data points.")
 
-            # convert dataframe to CSV for download
             csv = df.to_csv().encode("utf-8")
 
-            #  create download button for CSV
 
             st.download_button(
             label = "Download Data as CSV",
@@ -313,11 +307,9 @@ def display_portfolio_analysis():
                                     st.warning(f"Daily returns for {symbol} not available, skipping in portfolio calculation.")
 
                             if not portfolio_daily_returns.empty:
-                                # Calculate total returns
                                 portfolio_total = (1 + portfolio_daily_returns).prod() - 1
                                 benchmark_total = (1 + benchmark_returns).prod() - 1
 
-                                # Volatility
                                 portfolio_vol = portfolio_daily_returns.std() * np.sqrt(252)
                                 benchmark_vol = benchmark_returns.std() * np.sqrt(252)
 
