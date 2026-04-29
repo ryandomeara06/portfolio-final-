@@ -7,7 +7,7 @@ import datetime
 
 st.set_page_config(page_title = "Final Project", layout="wide")
 
-st.title("Data Analytics App")
+st.title("MarketView Analytics")
 
 def display_stock_indicator():
     st.write("Extract stock market prices from yahoo finance using ticker")
