@@ -7,7 +7,7 @@ import datetime
 
 st.set_page_config(page_title = "Final Project", layout="wide")
 
-st.title("MarketView Analytics")
+st.title("Vector Finance Studio")
 
 def display_stock_indicator():
     st.write("Extract stock market prices from yahoo finance using ticker")
@@ -52,13 +52,6 @@ def display_stock_indicator():
 
             st.subheader("Historical data")
             st.dataframe(df)
-
-            st.subheader("Closing price chart")
-            fig, ax = plt.subplots()
-            ax.plot(df.index, df['Close'])
-            ax.set_xlabel("Date")
-            ax.set_ylabel("Closing Price")
-            st.pyplot(fig)
 
             st.subheader("Moving Averages and Trend Analysis")
 
