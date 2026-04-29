@@ -46,7 +46,7 @@ def display_stock_indicator():
             st.write(f"**Company Name:** {company_name}")
             st.write(f"**Sector:** {sector}")
             st.write(f"**Industry:** {industry}")
-            st.write(f"**Market Cap:** {market_cap:,}")
+            st.write(f"**Market Cap:** {market_cap:}")
             st.write(f"**Website:** {website}")
 
 
