@@ -256,6 +256,12 @@ def display_portfolio_analysis():
                         except Exception as e:
                             st.error(f"Error fetching data for {ticker}: {e}")
 
+                    if stock_data:
+                        first_ticker = list(stock_data.keys())[0]
+                        st.write(f"Preview of data for {first_ticker}:")
+                        st.dataframe(stock_data[first_ticker].head())
+
+
                     st.subheader('Fetching Benchmark Data (SPY)...')
                     try:
                         spy_data = yf.download('SPY', start=start_date_portfolio, end=end_date_portfolio, auto_adjust=False)
@@ -268,19 +274,17 @@ def display_portfolio_analysis():
                     except Exception as e:
                         st.error(f"Error fetching SPY benchmark data: {e}")
 
-                    
                     st.subheader("Portfolio Performance Analysis")
-
 
                     prices_data = {ticker: stock_data[ticker]['Close'].squeeze() for ticker in stock_data}
                     if prices_data:
 
                         all_scalar_values = all(not isinstance(v, (pd.Series, list, np.ndarray)) for v in prices_data.values())
                         if all_scalar_values:
-                            
+
                             prices = pd.DataFrame(prices_data, index=[0]).dropna()
                         else:
-                           
+
                             prices = pd.DataFrame(prices_data).dropna()
                     else:
                         st.error("No valid stock data to perform portfolio analysis.")
@@ -307,13 +311,18 @@ def display_portfolio_analysis():
                                     st.warning(f"Daily returns for {symbol} not available, skipping in portfolio calculation.")
 
                             if not portfolio_daily_returns.empty:
+
                                 portfolio_total = (1 + portfolio_daily_returns).prod() - 1
                                 benchmark_total = (1 + benchmark_returns).prod() - 1
 
                                 portfolio_vol = portfolio_daily_returns.std() * np.sqrt(252)
                                 benchmark_vol = benchmark_returns.std() * np.sqrt(252)
 
-annualized_portfolio_return = portfolio_daily_returns.mean() * 252
+
+                                risk_free_rate = 0.03 # Annual risk-free rate
+
+                                # Calculate annualized portfolio return
+                                annualized_portfolio_return = portfolio_daily_returns.mean() * 252
 
                                 # Calculate annualized benchmark return
                                 annualized_benchmark_return = benchmark_returns.mean() * 252
@@ -329,7 +338,6 @@ annualized_portfolio_return = portfolio_daily_returns.mean() * 252
                                     benchmark_sharpe = (annualized_benchmark_return - risk_free_rate) / benchmark_vol
                                 else:
                                     benchmark_sharpe = 0
-
 
                                 st.write("#### Comparative Performance")
                                 col_port_ret, col_bench_ret = st.columns(2)
@@ -363,9 +371,9 @@ annualized_portfolio_return = portfolio_daily_returns.mean() * 252
 
 
                                 if portfolio_total > benchmark_total:
-                                    st.write(f"**1. Performance:** Your portfolio's total return of {portfolio_total * 100:.2f}% **outperformed** the benchmark (SPY) which had a total return of {benchmark_total * 100:.2f}%")
+                                    st.write(f"**1. Outperformance:** Your portfolio's total return of {portfolio_total * 100:.2f}% **outperformed** the benchmark (SPY) which had a total return of {benchmark_total * 100:.2f}%")
                                 elif portfolio_total < benchmark_total:
-                                    st.write(f"**1. Performance:** Your portfolio's total return of {portfolio_total * 100:.2f}% **underperformed** the benchmark (SPY) which had a total return of {benchmark_total * 100:.2f}%")
+                                    st.write(f"**1. Underperformance:** Your portfolio's total return of {portfolio_total * 100:.2f}% **underperformed** the benchmark (SPY) which had a total return of {benchmark_total * 100:.2f}%")
                                 else:
                                     st.write(f"**1. Equal Performance:** Your portfolio's total return of {portfolio_total * 100:.2f}% **performed equally** to the benchmark (SPY) which had a total return of {benchmark_total * 100:.2f}%. Both had total returns of {benchmark_total * 100:.2f}%. ")
 
@@ -397,7 +405,6 @@ annualized_portfolio_return = portfolio_daily_returns.mean() * 252
                 st.error(f"Total weights must sum to 100%. Current total: {total_weight}%")
         else:
             st.error("Please enter all 5 stock tickers.")
-
 
 tab1, tab2 = st.tabs(["Stock Indicator", "Portfolio Analysis"])
 
