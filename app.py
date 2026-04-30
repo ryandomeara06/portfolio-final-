@@ -313,10 +313,23 @@ def display_portfolio_analysis():
                                 portfolio_vol = portfolio_daily_returns.std() * np.sqrt(252)
                                 benchmark_vol = benchmark_returns.std() * np.sqrt(252)
 
+annualized_portfolio_return = portfolio_daily_returns.mean() * 252
 
-                                risk_free_rate = 0.03
-                                portfolio_sharpe = (portfolio_total - risk_free_rate) / portfolio_vol if portfolio_vol != 0 else 0
-                                benchmark_sharpe = (benchmark_total - risk_free_rate) / benchmark_vol if benchmark_vol != 0 else 0
+                                # Calculate annualized benchmark return
+                                annualized_benchmark_return = benchmark_returns.mean() * 252
+
+                                # Calculate Sharpe Ratio for Portfolio
+                                if portfolio_vol != 0:
+                                    portfolio_sharpe = (annualized_portfolio_return - risk_free_rate) / portfolio_vol
+                                else:
+                                    portfolio_sharpe = 0
+
+                                # Calculate Sharpe Ratio for Benchmark
+                                if benchmark_vol != 0:
+                                    benchmark_sharpe = (annualized_benchmark_return - risk_free_rate) / benchmark_vol
+                                else:
+                                    benchmark_sharpe = 0
+
 
                                 st.write("#### Comparative Performance")
                                 col_port_ret, col_bench_ret = st.columns(2)
